@@ -10,3 +10,6 @@ test-results
 .repo-control/
 *.tgz
 .impeccable/
+
+.workbench-review-request
+.workbench-review-request.*.tmp
