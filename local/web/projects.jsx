@@ -771,8 +771,8 @@ function ReviewPanel({ id, review }) {
     }
   }
   const report = review.report;
-  const bullets = (items) => (
-    <ul>
+  const bullets = (items, List = 'ul') => (
+    <List>
       {items.map((item, index) => (
         <li key={index}>
           {item.text}{' '}
@@ -790,17 +790,17 @@ function ReviewPanel({ id, review }) {
           </span>
         </li>
       ))}
-    </ul>
+    </List>
   );
   return (
     <section className="panel detail-section project-review">
       <div className="section-heading">
         <div>
-          <h2>Codex 项目整理</h2>
+          <h2>项目整理</h2>
           {(report || review.checked) && (
             <p className="minor">
               {report
-                ? '上次整理 ' + exact(report.at) + ' · ' + report.seen + ' 条获准对话'
+                ? '上次整理 ' + exact(report.at) + ' · 参考 ' + report.sources.length + ' 条资料'
                 : '上次检查 ' + exact(review.checked)}
             </p>
           )}
@@ -836,17 +836,29 @@ function ReviewPanel({ id, review }) {
       )}
       {report ? (
         <div className="review-result">
+          <h3>现在到哪了</h3>
           <p>{report.summary}</p>
+          {report.next.length > 0 && (
+            <details className="disclosure review-recommendations" open>
+              <summary>接下来怎么提</summary>
+              {bullets(report.next, 'ol')}
+              <Copy
+                key={report.at}
+                label="复制给 Codex"
+                value={report.next.map((item, index) => index + 1 + '. ' + item.text).join('\n')}
+              />
+            </details>
+          )}
           <div className="review-columns">
             {report.changes.length > 0 && (
               <section>
-                <h3>有证据的变化</h3>
+                <h3>最近有什么进展</h3>
                 {bullets(report.changes)}
               </section>
             )}
             {report.unknowns.length > 0 && (
               <section>
-                <h3>待核实</h3>
+                <h3>还要确认什么</h3>
                 <ul>
                   {report.unknowns.map((value, index) => (
                     <li key={index}>{value}</li>
@@ -855,21 +867,8 @@ function ReviewPanel({ id, review }) {
               </section>
             )}
           </div>
-          {report.next.length > 0 && (
-            <details className="disclosure review-recommendations">
-              <summary>
-                建议下一步 <span className="count">{report.next.length}</span>
-              </summary>
-              {bullets(report.next)}
-              <Copy
-                key={report.at}
-                label="复制建议"
-                value={report.next.map((item, index) => index + 1 + '. ' + item.text).join('\n')}
-              />
-            </details>
-          )}
           <details className="disclosure">
-            <summary>整理依据（{report.sources.length}）</summary>
+            <summary>查看整理依据</summary>
             <ul className="review-sources">
               {report.sources.map((source) => (
                 <li key={source.ref}>

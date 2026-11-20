@@ -1632,7 +1632,7 @@ a.back,
   gap: 16px;
   padding-top: 13px;
 }
-.review-columns h3 {
+.review-result h3 {
   font-size: 13px;
   margin: 0;
 }
@@ -1990,7 +1990,7 @@ h2[tabindex]:focus-visible {
 .disclosure .copy-action {
   padding-bottom: 10px;
 }
-.review-recommendations ul {
+.review-recommendations ol {
   padding-left: 20px;
   margin: 0 0 10px;
   line-height: 1.55;
