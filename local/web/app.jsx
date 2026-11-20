@@ -229,7 +229,7 @@ function App() {
           <button className="brand" onClick={() => go()} aria-label="臻一项目工作台">
             <span className="brand-mark">
               {projectsHome && (
-                <span className="home-desktop-only">
+                <span className="home-screen-only">
                   <Icon name="cube" size={26} />
                 </span>
               )}
@@ -237,9 +237,7 @@ function App() {
             <span className="brand-title">
               臻一 <span>项目工作台</span>
               {projectsHome && (
-                <small className="home-brand-caption home-desktop-only">
-                  Personal Project Workspace
-                </small>
+                <small className="home-brand-caption home-screen-only">Personal Project Workspace</small>
               )}
             </span>
           </button>
@@ -256,14 +254,14 @@ function App() {
           <div className="status">
             <i className={(projectsHome ? homeConnection : connection) === '在线' ? 'live' : ''} />
             <span>
-              {projectsHome && <span className="home-desktop-only">本机</span>}
+              {projectsHome && <span className="home-screen-only">本机</span>}
               采集{projectsHome ? homeConnection : connection}
             </span>
             <span className="lastscan">
               {scanTime ? '上次扫描 ' + scanTime : projectsHome ? '上次扫描 —' : ''}
             </span>
             {projectsHome && (
-              <span className="home-signature home-desktop-only" aria-hidden="true">
+              <span className="home-signature home-screen-only" aria-hidden="true">
                 Z
               </span>
             )}

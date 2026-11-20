@@ -75,7 +75,7 @@ function Metric({ label, value, onClick, active, icon, note }) {
     <>
       <span className="metric-label">
         {icon && (
-          <span className="home-metric-icon home-desktop-only">
+          <span className="home-metric-icon home-screen-only">
             <Icon name={icon} size={14} />
           </span>
         )}
@@ -84,8 +84,8 @@ function Metric({ label, value, onClick, active, icon, note }) {
       <strong className="metric-value">{value}</strong>
       {icon && (
         <>
-          <span className="home-metric-note home-desktop-only">{note}</span>
-          <span className="home-metric-art home-desktop-only" aria-hidden="true">
+          <span className="home-metric-note home-screen-only">{note}</span>
+          <span className="home-metric-art home-screen-only" aria-hidden="true">
             {homeMetricArt[icon]}
           </span>
         </>
@@ -140,7 +140,7 @@ export function ProjectSource({ local = false, count }) {
       <a className={local ? '' : 'selected'} aria-current={local ? undefined : 'page'} href="#/">
         Codex 项目
         {count !== undefined && (
-          <span className="home-tab-count home-desktop-only">{countValue(count)}</span>
+          <span className="home-tab-count home-screen-only">{countValue(count)}</span>
         )}
       </a>
       <a className={local ? 'selected' : ''} aria-current={local ? 'page' : undefined} href="#/local">
@@ -170,7 +170,7 @@ function RecentWork({ projects, now, countsVerified, viewAll }) {
     .sort((a, b) => b.last - a.last)
     .slice(0, 3);
   return (
-    <section className="home-recent home-desktop-only" aria-labelledby="home-recent-title">
+    <section className="home-recent home-screen-only" aria-labelledby="home-recent-title">
       <div className="home-recent-heading">
         <div>
           <h2 id="home-recent-title">继续最近的工作</h2>
@@ -249,7 +249,7 @@ const quickRoutes = [
 
 function HomeSidebar({ connection, scanTime, reviewed, total }) {
   return (
-    <aside className="home-sidebar home-desktop-only" aria-label="工作台快捷入口和采集状态">
+    <aside className="home-sidebar home-screen-only" aria-label="工作台快捷入口和采集状态">
       <section className="home-side-panel" aria-labelledby="home-quick-title">
         <div className="home-quick-heading">
           <span>
@@ -363,9 +363,9 @@ export function NativeList({ version, connection, scanTime }) {
     <>
       <div className="page-heading project-heading home-heading">
         <div>
-          <span className="home-eyebrow home-desktop-only">Workspace Overview</span>
+          <span className="home-eyebrow home-screen-only">Workspace Overview</span>
           <h1>项目总览</h1>
-          <p className="home-desktop-only">
+          <p className="home-screen-only">
             在一个地方查看本机项目、Codex 会话与近期活动，快速接回工作上下文。
           </p>
         </div>
@@ -376,7 +376,7 @@ export function NativeList({ version, connection, scanTime }) {
       </div>
       <div className="home-source">
         <ProjectSource count={data ? projects.length : undefined} />
-        <span className="home-source-note home-desktop-only">
+        <span className="home-source-note home-screen-only">
           <Icon name="lock" size={14} /> 所有项目与会话索引均来自本机
         </span>
       </div>
@@ -436,7 +436,7 @@ export function NativeList({ version, connection, scanTime }) {
               </h2>
               {data && (
                 <span className="result-count" aria-live="polite">
-                  <span className="home-desktop-only">当前视图 · </span>
+                  <span className="home-screen-only">当前视图 · </span>
                   {countValue(items.length)} 项
                 </span>
               )}
@@ -465,7 +465,7 @@ export function NativeList({ version, connection, scanTime }) {
                       <Icon name="close" size={15} />
                     </button>
                   ) : (
-                    <kbd className="home-desktop-only">⌘ K</kbd>
+                    <kbd className="home-screen-only">⌘ K</kbd>
                   )}
                 </label>
                 <select
@@ -506,7 +506,7 @@ export function NativeList({ version, connection, scanTime }) {
                 <thead>
                   <tr>
                     <th scope="col">
-                      项目<span className="home-desktop-only"> / 本地目录</span>
+                      项目<span className="home-screen-only"> / 本地目录</span>
                     </th>
                     <th scope="col">对话数</th>
                     <th scope="col">最近会话</th>
@@ -576,7 +576,7 @@ export function NativeList({ version, connection, scanTime }) {
             />
           )}
           {items.length > 0 && (
-            <div className="home-list-foot home-desktop-only">
+            <div className="home-list-foot home-screen-only">
               <span>
                 支持项目名称、目录搜索 <kbd>⌘ K</kbd> 快速定位
               </span>
@@ -597,7 +597,7 @@ export function NativeList({ version, connection, scanTime }) {
           total={data ? projects.length : undefined}
         />
       </div>
-      <p className="home-notice home-desktop-only">
+      <p className="home-notice home-screen-only">
         <Icon name="lock" size={14} /> 本地优先 · 这里只显示已登记项目及获准目录的索引信息
       </p>
     </>

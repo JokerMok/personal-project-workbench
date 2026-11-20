@@ -2093,9 +2093,9 @@ h2[tabindex]:focus-visible {
   }
 }
 
-/* Desktop project overview. The shared shell and project detail keep their own styles. */
-.home-desktop-only,
-.home-heading .home-desktop-only {
+/* Project overview uses the same components in a standalone window and in a docked browser. */
+.home-screen-only,
+.home-heading .home-screen-only {
   display: none;
 }
 .home-heading {
@@ -2105,7 +2105,7 @@ h2[tabindex]:focus-visible {
   margin-bottom: 18px;
 }
 
-@media (min-width: 1120px) {
+@media screen {
   body:has(.native-home) {
     background: #0b0f15;
   }
@@ -2156,7 +2156,7 @@ h2[tabindex]:focus-visible {
   .native-home-header .brand-mark::before {
     display: none;
   }
-  .native-home-header .brand-mark .home-desktop-only {
+  .native-home-header .brand-mark .home-screen-only {
     display: flex;
   }
   .native-home-header .brand-title > span {
@@ -2205,7 +2205,7 @@ h2[tabindex]:focus-visible {
     background: #88d4b3;
     box-shadow: 0 0 0 4px #72cb9d11;
   }
-  .native-home-header .status span .home-desktop-only {
+  .native-home-header .status span .home-screen-only {
     display: inline;
   }
   .native-home-header .lastscan {
@@ -2640,8 +2640,8 @@ h2[tabindex]:focus-visible {
   .native-home .list-heading {
     gap: 11px;
   }
-  .native-home .result-count .home-desktop-only,
-  .native-home .native-table th .home-desktop-only {
+  .native-home .result-count .home-screen-only,
+  .native-home .native-table th .home-screen-only {
     display: inline;
   }
   .native-home .list-controls {
@@ -2885,6 +2885,145 @@ h2[tabindex]:focus-visible {
   }
   .native-home .home-notice {
     margin-top: 22px;
+  }
+}
+
+@media screen and (max-width: 1119px) {
+  .native-home,
+  .native-home-header .top {
+    padding-inline: clamp(18px, 3vw, 28px);
+  }
+  .native-home {
+    padding-block: 32px 44px;
+  }
+  .native-home-header .top {
+    height: 65px;
+    gap: clamp(12px, 3vw, 30px);
+  }
+  .native-home-header .brand {
+    min-width: 0;
+  }
+  .native-home-header .global-nav,
+  .native-home-header .status {
+    gap: 13px;
+  }
+  .native-home-header .status > i {
+    margin-right: -6px;
+  }
+  .native-home-header .lastscan {
+    padding-left: 12px;
+  }
+  .native-home .home-heading h1 {
+    font-size: 32px;
+  }
+  .native-home .metric-grid,
+  .home-recent-cards {
+    gap: 12px;
+  }
+  .native-home .home-metric,
+  .home-recent-card,
+  .home-side-panel {
+    padding: 16px;
+  }
+  .native-home .home-metric {
+    min-height: 130px;
+  }
+  .home-recent-card {
+    min-height: 175px;
+  }
+  .home-focus-art {
+    width: min(194px, 48%);
+  }
+  .native-home .home-dashboard {
+    grid-template-columns: minmax(0, 1fr) clamp(200px, 24vw, 246px);
+    gap: 14px;
+  }
+  .native-home .native-toolbar {
+    padding: 12px 16px;
+  }
+  .native-home .list-controls {
+    gap: 8px;
+  }
+  .native-home .list-controls .search {
+    width: clamp(145px, 18vw, 190px);
+  }
+  .native-home .view-select {
+    min-width: 96px;
+  }
+  .native-home .native-table th,
+  .native-home .native-table td,
+  .native-home .home-list-foot {
+    padding-inline: 12px;
+  }
+  .native-home .native-table th:first-child {
+    width: 43%;
+  }
+  .native-home .native-table th:nth-child(2) {
+    width: 16%;
+  }
+  .native-home .native-table th:nth-child(3) {
+    width: 18%;
+  }
+  .native-home .native-table th:nth-child(4) {
+    width: 23%;
+  }
+}
+
+@media screen and (max-width: 880px) {
+  .native-home .home-dashboard {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .native-home .home-sidebar {
+    grid-row: 1;
+    grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
+  }
+}
+
+@media screen and (max-width: 760px) {
+  .native-home-header .top {
+    height: 56px;
+  }
+  .native-home-header .brand-title > span,
+  .native-home-header .home-brand-caption,
+  .native-home-header .home-signature,
+  .native-home .home-source-note {
+    display: none;
+  }
+  .native-home .metric-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .native-home .home-metric .metric-value {
+    font-size: 32px;
+  }
+  .home-recent-cards[data-count='3'] {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .home-recent-cards[data-count='3'] .home-recent-card:first-child {
+    grid-column: 1 / -1;
+  }
+  .home-recent-heading > div,
+  .home-recent-meta,
+  .home-recent-foot,
+  .native-home .home-list-foot {
+    flex-wrap: wrap;
+  }
+}
+
+@media screen and (max-width: 700px) {
+  .native-home .native-table th:first-child {
+    width: auto;
+  }
+  .native-home .native-table th:nth-child(2) {
+    width: 68px;
+  }
+  .native-home .native-table th:nth-child(3) {
+    width: 85px;
+  }
+}
+
+@media screen and (max-width: 380px) {
+  .native-home .metric-grid {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
