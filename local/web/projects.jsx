@@ -43,20 +43,64 @@ function PeriodSelect({ value, onChange, label }) {
   );
 }
 
-function Metric({ label, value, onClick, active }) {
+const homeMetricArt = {
+  cube: (
+    <svg viewBox="0 0 140 90">
+      <path d="m36 40 31-16 30 16v30L67 86 36 70z M67 24v31M36 40l31 16 30-16" />
+      <path opacity=".45" d="m75 4 42 21v29M15 53V21l27-14 M4 77h22m-11-11v22M120 4h13M126 0v14" />
+    </svg>
+  ),
+  message: (
+    <svg viewBox="0 0 120 120">
+      <path d="M23 28h74v53H54l-20 16V81H23z M35 45h50m-50 14h35" />
+    </svg>
+  ),
+  history: (
+    <svg viewBox="0 0 120 120">
+      <circle cx="60" cy="59" r="39" />
+      <path d="M60 33v29l18 10" />
+    </svg>
+  ),
+  check: (
+    <svg viewBox="0 0 120 120">
+      <rect x="30" y="22" width="60" height="76" rx="8" />
+      <path d="m44 60 12 12 24-28" />
+    </svg>
+  ),
+};
+
+function Metric({ label, value, onClick, active, icon, note }) {
+  const className = icon ? 'metric-card home-metric' : 'metric-card';
   const content = (
     <>
-      <span className="metric-label">{label}</span>
+      <span className="metric-label">
+        {icon && (
+          <span className="home-metric-icon home-desktop-only">
+            <Icon name={icon} size={14} />
+          </span>
+        )}
+        {label}
+      </span>
       <strong className="metric-value">{value}</strong>
+      {icon && (
+        <>
+          <span className="home-metric-note home-desktop-only">{note}</span>
+          <span className="home-metric-art home-desktop-only" aria-hidden="true">
+            {homeMetricArt[icon]}
+          </span>
+        </>
+      )}
       {onClick && <Icon name="chevron" size={16} />}
     </>
   );
   return onClick ? (
-    <button className="metric-card" type="button" aria-pressed={active} onClick={onClick}>
+    <button className={className} data-icon={icon} type="button" aria-pressed={active} onClick={onClick}>
       {content}
     </button>
   ) : (
-    <div className="metric-card">{content}</div>
+    <div className={className} data-icon={icon}>
+      {content}
+    </div>
   );
 }
 
@@ -90,13 +134,195 @@ function useProjectData(url, version) {
   ];
 }
 
-export function NativeList({ version }) {
+export function ProjectSource({ local = false, count }) {
+  return (
+    <nav className="segments project-source" aria-label="项目来源">
+      <a className={local ? '' : 'selected'} aria-current={local ? undefined : 'page'} href="#/">
+        Codex 项目
+        {count !== undefined && (
+          <span className="home-tab-count home-desktop-only">{countValue(count)}</span>
+        )}
+      </a>
+      <a className={local ? 'selected' : ''} aria-current={local ? 'page' : undefined} href="#/local">
+        扫描归组
+      </a>
+    </nav>
+  );
+}
+
+const validTime = (time) => Number.isFinite(time) && time > 0;
+const clockTime = new Intl.DateTimeFormat('zh-CN', {
+  hour: '2-digit',
+  minute: '2-digit',
+  hourCycle: 'h23',
+});
+const homeDate = (stamp, now) =>
+  !validTime(stamp)
+    ? '—'
+    : new Date(stamp).toDateString() === new Date(now).toDateString()
+      ? '今天 ' + clockTime.format(stamp)
+      : shortDate(stamp);
+const homePath = (path) => path?.replace(/^\/Users\/[^/]+\//, '…/') || '无本地目录';
+
+function RecentWork({ projects, now, countsVerified, viewAll }) {
+  const recent = projects
+    .filter((project) => !project.parent && validTime(project.last))
+    .sort((a, b) => b.last - a.last)
+    .slice(0, 3);
+  return (
+    <section className="home-recent home-desktop-only" aria-labelledby="home-recent-title">
+      <div className="home-recent-heading">
+        <div>
+          <h2 id="home-recent-title">继续最近的工作</h2>
+          <span>按最近会话时间排列</span>
+        </div>
+        <button className="home-text-link" type="button" onClick={viewAll}>
+          查看全部项目 <Icon name="arrow" size={15} />
+        </button>
+      </div>
+      {recent.length > 0 ? (
+        <div className="home-recent-cards" data-count={recent.length}>
+          {recent.map((project, index) => {
+            const location = project.paths[0];
+            const mark = project.name.match(/\b[A-Z]{2,3}\b/)?.[0] || Array.from(project.name.trim())[0];
+            return (
+              <a
+                className="home-recent-card"
+                key={project.id}
+                href={page(project.id)}
+                title={project.name}
+              >
+                {index === 0 && (
+                  <svg className="home-focus-art" viewBox="0 0 194 140" fill="none" aria-hidden="true">
+                    <circle cx="104" cy="71" r="47" stroke="#d5b17e" strokeOpacity=".26" />
+                    <circle
+                      cx="104"
+                      cy="71"
+                      r="67"
+                      stroke="#d5b17e"
+                      strokeOpacity=".15"
+                      strokeDasharray="5 7"
+                    />
+                    <path d="m104 38 29 17v34l-29 17-29-17V55z" stroke="#f1cc8e" strokeOpacity=".6" />
+                    <path d="m75 55 29 18 29-18m-29 18v33" stroke="#f1cc8e" strokeOpacity=".46" />
+                    <circle cx="151" cy="71" r="4" fill="#ecbd79" />
+                    <circle cx="71" cy="9" r="3" fill="#e9c48c" fillOpacity=".7" />
+                    <path d="M15 71h23m116 0h29" stroke="#be9660" strokeOpacity=".45" />
+                  </svg>
+                )}
+                <div className="home-recent-meta">
+                  <span className="home-recent-mark" aria-hidden="true">
+                    {mark || <Icon name="folder" />}
+                  </span>
+                  <time title={exact(project.last)}>
+                    <Icon name="clock" size={14} /> {homeDate(project.last, now)}
+                  </time>
+                </div>
+                <h3>{project.name}</h3>
+                <p className="home-recent-path mono" title={location}>
+                  {homePath(location)}
+                </p>
+                <div className="home-recent-foot">
+                  <span>
+                    <strong>{countValue(project.count, countsVerified)}</strong> 条项目对话
+                  </span>
+                  <span>
+                    进入项目 <Icon name="arrow" size={15} />
+                  </span>
+                </div>
+              </a>
+            );
+          })}
+        </div>
+      ) : (
+        <p className="home-recent-empty">暂无最近会话记录。</p>
+      )}
+    </section>
+  );
+}
+
+const quickRoutes = [
+  ['#/codex', 'message', 'Codex 对话', '搜索并继续已授权会话'],
+  ['#/local', 'scan', '扫描归组', '发现并确认目录中的项目'],
+  ['#/native/new', 'plus', '登记新项目', '选定目录并创建 Codex 项目'],
+];
+
+function HomeSidebar({ connection, scanTime, reviewed, total }) {
+  return (
+    <aside className="home-sidebar home-desktop-only" aria-label="工作台快捷入口和采集状态">
+      <section className="home-side-panel" aria-labelledby="home-quick-title">
+        <div className="home-quick-heading">
+          <span>
+            <Icon name="spark" />
+          </span>
+          <div>
+            <h2 id="home-quick-title">快速进入</h2>
+            <p>直达对话、归组和新项目</p>
+          </div>
+        </div>
+        <nav className="home-quick-links" aria-label="快速进入">
+          {quickRoutes.map(([href, icon, name, detail]) => (
+            <a href={href} key={href}>
+              <span className="home-quick-icon">
+                <Icon name={icon} size={16} />
+              </span>
+              <span>
+                <strong>{name}</strong>
+                <small>{detail}</small>
+              </span>
+              <Icon name="arrow" size={15} />
+            </a>
+          ))}
+        </nav>
+      </section>
+      <section className="home-side-panel home-collection" aria-labelledby="home-collection-title">
+        <div className="home-collection-heading">
+          <h2 id="home-collection-title">本地采集状态</h2>
+          <span className="home-connection" data-online={connection === '在线'}>
+            {connection}
+          </span>
+        </div>
+        <dl>
+          <div>
+            <dt>数据来源</dt>
+            <dd>本机 Codex 索引</dd>
+          </div>
+          <div>
+            <dt>最近扫描</dt>
+            <dd>{scanTime || '—'}</dd>
+          </div>
+          {total !== undefined && (
+            <div>
+              <dt>已整理项目</dt>
+              <dd>
+                {countValue(reviewed)} / {countValue(total)}
+              </dd>
+            </div>
+          )}
+        </dl>
+        <p>项目整理会补充进展和下一步，原始项目与对话可照常查看。</p>
+      </section>
+    </aside>
+  );
+}
+
+export function NativeList({ version, connection, scanTime }) {
   const [data, error, retry] = useProjectData(endpoint, version);
   const [query, setQuery] = useState('');
   const [scope, setScope] = useState('tree');
   const [period, setPeriod] = useState('all');
   const listTitle = useRef(null);
   const searchInput = useRef(null);
+  useEffect(() => {
+    const jump = (event) => {
+      if (searchInput.current && (event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
+        event.preventDefault();
+        searchInput.current.focus();
+      }
+    };
+    window.addEventListener('keydown', jump);
+    return () => window.removeEventListener('keydown', jump);
+  }, []);
   const projects = data?.items || [];
   const countsVerified = data?.countsVerified;
   const range = countsVerified ? period : 'all';
@@ -130,26 +356,52 @@ export function NativeList({ version }) {
   const selected = (nextScope, nextPeriod = 'all') =>
     scope === nextScope && range === nextPeriod && !search;
   const total = projects.reduce((sum, project) => (project.parent ? sum : sum + project.count), 0);
+  const reviewedCount = projects.filter((project) => project.reviewedAt).length;
   const hasFilters = search || scope !== 'tree' || range !== 'all';
 
   return (
     <>
+      <div className="page-heading project-heading home-heading">
+        <div>
+          <span className="home-eyebrow home-desktop-only">Workspace Overview</span>
+          <h1>项目总览</h1>
+          <p className="home-desktop-only">
+            在一个地方查看本机项目、Codex 会话与近期活动，快速接回工作上下文。
+          </p>
+        </div>
+        <a className="primary" href="#/native/new">
+          <Icon name="plus" size={16} />
+          新建项目
+        </a>
+      </div>
+      <div className="home-source">
+        <ProjectSource count={data ? projects.length : undefined} />
+        <span className="home-source-note home-desktop-only">
+          <Icon name="lock" size={14} /> 所有项目与会话索引均来自本机
+        </span>
+      </div>
       {data && (
         <section className="metric-grid" aria-label="项目指标">
           <Metric
             label="Codex 项目"
             value={countValue(projects.length)}
+            icon="cube"
+            note="本机项目索引 · 包含子项目"
             onClick={() => select('all')}
             active={selected('all')}
           />
           <Metric
             label="项目对话"
             value={countValue(total, countsVerified)}
+            icon="message"
+            note={countsVerified ? '已关联的 Codex 会话' : '对话数未核实'}
             onClick={countsVerified ? () => select('sessions') : undefined}
             active={selected('sessions')}
           />
           <Metric
             label="近 7 天活跃项目"
+            icon="history"
+            note={countsVerified ? '按最近会话更新时间' : '活动时间未核实'}
             value={countValue(
               projects.filter((project) => current(project.last, '7', now)).length,
               countsVerified,
@@ -159,154 +411,195 @@ export function NativeList({ version }) {
           />
           <Metric
             label="已整理项目"
-            value={countValue(projects.filter((project) => project.reviewedAt).length)}
+            value={countValue(reviewedCount)}
+            icon="check"
+            note="已有可追溯的整理记录"
             onClick={() => select('reviewed')}
             active={selected('reviewed')}
           />
         </section>
       )}
-      <section className="list-shell native-list" aria-labelledby="native-list-title">
-        <div className="toolbar native-toolbar">
-          <div className="list-heading">
-            <h2 id="native-list-title" ref={listTitle} tabIndex={-1}>
-              项目列表
-            </h2>
-            {data && (
-              <span className="result-count" aria-live="polite">
-                {countValue(items.length)} 个项目
-              </span>
-            )}
-          </div>
-          {data && (
-            <div className="list-controls">
-              <label className="search">
-                <Icon name="search" size={16} />
-                <input
-                  ref={searchInput}
-                  aria-label="搜索 Codex 项目"
-                  placeholder="搜索项目或目录"
-                  value={query}
-                  onChange={(event) => setQuery(event.target.value)}
-                />
-                {query && (
-                  <button
-                    type="button"
-                    aria-label="清除搜索"
-                    onClick={() => {
-                      setQuery('');
-                      searchInput.current?.focus();
-                    }}
-                  >
-                    <Icon name="close" size={15} />
-                  </button>
-                )}
-              </label>
-              <select
-                className="view-select"
-                aria-label="项目范围"
-                value={scope}
-                onChange={(event) => setScope(event.target.value)}
-              >
-                <option value="tree">项目层级</option>
-                <option value="all">全部项目</option>
-                <option value="sessions" disabled={!countsVerified}>
-                  有对话
-                </option>
-                <option value="reviewed">已整理</option>
-              </select>
-              {countsVerified && (
-                <PeriodSelect value={period} onChange={setPeriod} label="项目更新时间" />
+      {projects.length > 0 && (
+        <RecentWork
+          projects={projects}
+          now={now}
+          countsVerified={countsVerified}
+          viewAll={() => select('all')}
+        />
+      )}
+      <div className="home-dashboard">
+        <section className="list-shell native-list" aria-labelledby="native-list-title">
+          <div className="toolbar native-toolbar">
+            <div className="list-heading">
+              <h2 id="native-list-title" ref={listTitle} tabIndex={-1}>
+                项目列表
+              </h2>
+              {data && (
+                <span className="result-count" aria-live="polite">
+                  <span className="home-desktop-only">当前视图 · </span>
+                  {countValue(items.length)} 项
+                </span>
               )}
             </div>
-          )}
-        </div>
-        {error && (
-          <StatePanel
-            kind="error"
-            title="项目列表读取失败"
-            detail={error}
-            action={
-              <button type="button" className="secondary" onClick={retry}>
-                重试
-              </button>
-            }
-          />
-        )}
-        {!data && !error && <StatePanel kind="loading" title="正在读取 Codex 项目" />}
-        {items.length > 0 && (
-          <div className="native-table-wrap">
-            <table className="native-table" aria-label="Codex 项目">
-              <thead>
-                <tr>
-                  <th scope="col">项目</th>
-                  <th scope="col">对话数</th>
-                  <th scope="col">最近会话</th>
-                  <th scope="col">项目整理</th>
-                </tr>
-              </thead>
-              <tbody>
-                {items.map((project) => {
-                  const children = childCounts.get(project.id) || 0;
-                  return (
-                    <tr key={project.id}>
-                      <td>
-                        <a className="project-entry" href={page(project.id)} title={project.name}>
-                          <span className="project-icon">
-                            <Icon name="folder" size={16} />
-                          </span>
-                          <span className="project-entry-text">
-                            <strong>{project.name}</strong>
-                            <small title={project.paths[0]}>{project.paths[0] || '无本地目录'}</small>
-                            {project.summary && (
-                              <small className="compact-brief">{project.summary}</small>
-                            )}
-                          </span>
-                        </a>
-                      </td>
-                      <td className="numeric-cell">
-                        <strong>{countValue(project.count, countsVerified)}</strong>
-                        {children > 0 && <small>{children} 个子项目</small>}
-                      </td>
-                      <td className="time-cell">
-                        <time title={project.last ? exact(project.last) : undefined}>
-                          {shortDate(project.last)}
-                        </time>
-                      </td>
-                      <td className="native-brief">
-                        {project.summary ? (
-                          <>
-                            <span>{project.summary}</span>
-                            <small>{shortDate(project.reviewedAt)}</small>
-                          </>
-                        ) : (
-                          <small>待整理</small>
-                        )}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+            {data && (
+              <div className="list-controls">
+                <label className="search">
+                  <Icon name="search" size={16} />
+                  <input
+                    ref={searchInput}
+                    aria-label="搜索 Codex 项目"
+                    placeholder="搜索项目或目录"
+                    autoComplete="off"
+                    value={query}
+                    onChange={(event) => setQuery(event.target.value)}
+                  />
+                  {query ? (
+                    <button
+                      type="button"
+                      aria-label="清除搜索"
+                      onClick={() => {
+                        setQuery('');
+                        searchInput.current?.focus();
+                      }}
+                    >
+                      <Icon name="close" size={15} />
+                    </button>
+                  ) : (
+                    <kbd className="home-desktop-only">⌘ K</kbd>
+                  )}
+                </label>
+                <select
+                  className="view-select"
+                  aria-label="项目范围"
+                  value={scope}
+                  onChange={(event) => setScope(event.target.value)}
+                >
+                  <option value="tree">项目层级</option>
+                  <option value="all">全部项目</option>
+                  <option value="sessions" disabled={!countsVerified}>
+                    有对话
+                  </option>
+                  <option value="reviewed">已整理</option>
+                </select>
+                {countsVerified && (
+                  <PeriodSelect value={period} onChange={setPeriod} label="项目更新时间" />
+                )}
+              </div>
+            )}
           </div>
-        )}
-        {data && !items.length && !error && (
-          <StatePanel
-            title={hasFilters ? '没有匹配的项目' : '暂无 Codex 项目'}
-            detail={hasFilters ? '调整项目范围、时间或搜索词后再查看。' : undefined}
-            action={
-              hasFilters ? (
-                <button type="button" className="secondary" onClick={reset}>
-                  清除筛选
+          {error && (
+            <StatePanel
+              kind="error"
+              title="项目列表读取失败"
+              detail={error}
+              action={
+                <button type="button" className="secondary" onClick={retry}>
+                  重试
                 </button>
-              ) : (
-                <a className="secondary" href="#/native/new">
-                  新建项目
-                </a>
-              )
-            }
-          />
-        )}
-      </section>
+              }
+            />
+          )}
+          {!data && !error && <StatePanel kind="loading" title="正在读取 Codex 项目" />}
+          {items.length > 0 && (
+            <div className="native-table-wrap">
+              <table className="native-table" aria-label="Codex 项目">
+                <thead>
+                  <tr>
+                    <th scope="col">
+                      项目<span className="home-desktop-only"> / 本地目录</span>
+                    </th>
+                    <th scope="col">对话数</th>
+                    <th scope="col">最近会话</th>
+                    <th scope="col">项目整理</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {items.map((project) => {
+                    const children = childCounts.get(project.id) || 0;
+                    return (
+                      <tr key={project.id}>
+                        <td>
+                          <a className="project-entry" href={page(project.id)} title={project.name}>
+                            <span className="project-icon">
+                              <Icon name="folder" size={16} />
+                            </span>
+                            <span className="project-entry-text">
+                              <strong>{project.name}</strong>
+                              <small title={project.paths[0]}>{homePath(project.paths[0])}</small>
+                              {project.summary && (
+                                <small className="compact-brief">{project.summary}</small>
+                              )}
+                            </span>
+                          </a>
+                        </td>
+                        <td className="numeric-cell">
+                          <strong>{countValue(project.count, countsVerified)}</strong>
+                          {children > 0 && <small>{children} 个子项目</small>}
+                        </td>
+                        <td className="time-cell">
+                          <time title={validTime(project.last) ? exact(project.last) : undefined}>
+                            {homeDate(project.last, now)}
+                          </time>
+                        </td>
+                        <td className="native-brief">
+                          {project.summary ? (
+                            <>
+                              <span>{project.summary}</span>
+                              <small>{shortDate(project.reviewedAt)}</small>
+                            </>
+                          ) : (
+                            <small className="home-review-pending">待整理</small>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+          {data && !items.length && !error && (
+            <StatePanel
+              title={hasFilters ? '没有匹配的项目' : '暂无 Codex 项目'}
+              detail={hasFilters ? '调整项目范围、时间或搜索词后再查看。' : undefined}
+              action={
+                hasFilters ? (
+                  <button type="button" className="secondary" onClick={reset}>
+                    清除筛选
+                  </button>
+                ) : (
+                  <a className="secondary" href="#/native/new">
+                    新建项目
+                  </a>
+                )
+              }
+            />
+          )}
+          {items.length > 0 && (
+            <div className="home-list-foot home-desktop-only">
+              <span>
+                支持项目名称、目录搜索 <kbd>⌘ K</kbd> 快速定位
+              </span>
+              <button
+                className="home-text-link"
+                type="button"
+                onClick={() => searchInput.current?.focus()}
+              >
+                回到筛选
+              </button>
+            </div>
+          )}
+        </section>
+        <HomeSidebar
+          connection={connection}
+          scanTime={scanTime}
+          reviewed={reviewedCount}
+          total={data ? projects.length : undefined}
+        />
+      </div>
+      <p className="home-notice home-desktop-only">
+        <Icon name="lock" size={14} /> 本地优先 · 这里只显示已登记项目及获准目录的索引信息
+      </p>
     </>
   );
 }

@@ -5,41 +5,10 @@ import { ProjectTable } from '../../apps/web/src/components/dashboard/ProjectTab
 import { Setup, Confirm } from './forms.jsx';
 import { Detail } from './detail.jsx';
 import { Chat, ChatScopes } from './chat.jsx';
-import { NativeList, NativeDetail, NativeCreate } from './projects.jsx';
+import { NativeList, NativeDetail, NativeCreate, ProjectSource } from './projects.jsx';
 
 import { api, Back, go, Icon, StatePanel } from './ui.jsx';
 const routeNow = () => location.hash.replace(/^#\/?/, '').split('/');
-function ProjectSource({ local = false }) {
-  return (
-    <nav className="segments project-source" aria-label="项目来源">
-      <a className={local ? '' : 'selected'} aria-current={local ? undefined : 'page'} href="#/">
-        Codex 项目
-      </a>
-      <a className={local ? 'selected' : ''} aria-current={local ? 'page' : undefined} href="#/local">
-        扫描归组
-      </a>
-    </nav>
-  );
-}
-
-function NativeHome({ state }) {
-  return (
-    <>
-      <div className="page-heading project-heading">
-        <div>
-          <h1>项目总览</h1>
-          <ProjectSource />
-        </div>
-        <a className="primary" href="#/native/new">
-          <Icon name="plus" size={16} />
-          新建项目
-        </a>
-      </div>
-      <NativeList version={state.projectVersion} />
-    </>
-  );
-}
-
 function Home({ state, filter, setFilter, query, setQuery }) {
   const search = useRef(null);
   useEffect(() => {
@@ -210,6 +179,11 @@ function App() {
     };
   }, []);
   const [screen, id, context, parentProject] = route;
+  const projectsHome = !screen;
+  const homeConnection = err ? '连接异常' : connection;
+  const scanTime = state?.scanned
+    ? new Date(state.scanned).toLocaleTimeString('zh-CN', { hour12: false })
+    : '';
   let cwdHint = '';
   if ((screen === 'codex' && id === 'new') || screen === 'native') {
     try {
@@ -250,17 +224,28 @@ function App() {
       >
         跳到主要内容
       </a>
-      <header>
+      <header className={projectsHome ? 'native-home-header' : undefined}>
         <div className="top">
           <button className="brand" onClick={() => go()} aria-label="臻一项目工作台">
-            <span className="brand-mark" />
+            <span className="brand-mark">
+              {projectsHome && (
+                <span className="home-desktop-only">
+                  <Icon name="cube" size={26} />
+                </span>
+              )}
+            </span>
             <span className="brand-title">
               臻一 <span>项目工作台</span>
+              {projectsHome && (
+                <small className="home-brand-caption home-desktop-only">
+                  Personal Project Workspace
+                </small>
+              )}
             </span>
           </button>
           <nav className="global-nav" aria-label="工作台导航">
             <a href="#/" aria-current={screen !== 'codex' ? 'page' : undefined}>
-              <Icon name="grid" size={16} />
+              <Icon name={projectsHome ? 'overview' : 'grid'} size={16} />
               项目
             </a>
             <a href="#/codex" aria-current={screen === 'codex' ? 'page' : undefined}>
@@ -269,17 +254,27 @@ function App() {
             </a>
           </nav>
           <div className="status">
-            <i className={connection === '在线' ? 'live' : ''} />
-            <span>采集{connection}</span>
-            <span className="lastscan">
-              {state?.scanned
-                ? '上次扫描 ' + new Date(state.scanned).toLocaleTimeString('zh-CN', { hour12: false })
-                : ''}
+            <i className={(projectsHome ? homeConnection : connection) === '在线' ? 'live' : ''} />
+            <span>
+              {projectsHome && <span className="home-desktop-only">本机</span>}
+              采集{projectsHome ? homeConnection : connection}
             </span>
+            <span className="lastscan">
+              {scanTime ? '上次扫描 ' + scanTime : projectsHome ? '上次扫描 —' : ''}
+            </span>
+            {projectsHome && (
+              <span className="home-signature home-desktop-only" aria-hidden="true">
+                Z
+              </span>
+            )}
           </div>
         </div>
       </header>
-      <main id="main-content" tabIndex={-1} className={screen === 'codex' ? 'codex-page' : undefined}>
+      <main
+        id="main-content"
+        tabIndex={-1}
+        className={projectsHome ? 'native-home' : screen === 'codex' ? 'codex-page' : undefined}
+      >
         {state && err && (
           <div role="alert" className="alert">
             {err}
@@ -366,7 +361,7 @@ function App() {
         ) : screen === 'local' ? (
           <Home {...{ state, query, setQuery, filter, setFilter }} />
         ) : (
-          <NativeHome state={state} />
+          <NativeList version={state.projectVersion} connection={homeConnection} scanTime={scanTime} />
         )}
       </main>
     </>

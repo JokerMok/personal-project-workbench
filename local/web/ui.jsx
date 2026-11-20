@@ -4,6 +4,8 @@ export function Icon({ name, size = 18 }) {
     branch: 'M6 3v11a4 4 0 0 0 4 4h7 M14 15l3 3-3 3 M3 6l3-3 3 3',
     message: 'M3 5h18v12H10l-5 4v-4H3z',
     grid: 'M3 4h18v16H3z M3 9h18 M9 9v11',
+    overview: 'M3 4h7v7H3z M14 4h7v7h-7z M3 15h7v6H3z M14 15h7v6h-7z',
+    cube: 'm12 2.5 9 5.1v9.3l-9 5-9-5V7.6z M3.2 7.7l8.8 5 8.8-5 M12 12.7V22',
     send: 'M12 19V5 M6 11l6-6 6 6',
     stop: 'M7 7h10v10H7z',
     folder: 'M3 7V5h6l2 2h10v12H3z',
@@ -15,6 +17,11 @@ export function Icon({ name, size = 18 }) {
     layers: 'M3 7l9-5 9 5-9 5z M3 12l9 5 9-5 M3 17l9 5 9-5',
     chevron: 'M9 6l6 6-6 6',
     check: 'M4 12l5 5L20 6',
+    clock: 'M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z M12 7v5l3 2',
+    history: 'M4 11a8 8 0 1 1 1.2 5M4 5v6h6M12 8v4l3 2',
+    scan: 'M4 9V4h5m6 0h5v5m0 6v5h-5m-6 0H4v-5M4 12h16',
+    spark: 'm12 2 2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2z',
+    lock: 'M5 10h14v11H5z M8 10V7a4 4 0 0 1 8 0v3',
     copy: 'M8 8h12v13H8z M4 16H3V3h12v1',
   };
   return (
